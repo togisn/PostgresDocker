@@ -1,0 +1,23 @@
+version: "3.3"
+services:
+  web:
+    build: ./web/
+    image: togisn/web:latest
+    ports:
+      - "8080:8080"
+  app :
+    build: ./app/
+    image: togisn/app:latest
+    environment: &environment
+      - POSTGRES_DB=dbname
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=secret
+    depends_on:
+      - "db"
+    command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+  db:
+    build: ./database/
+    image: togisn/db:latest
+    environment: *environment
+    ports:
+      - "5432:5432"
